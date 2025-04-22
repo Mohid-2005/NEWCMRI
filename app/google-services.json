@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "718781390485",
+    "project_id": "mycmri-5b273",
+    "storage_bucket": "mycmri-5b273.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718781390485:android:6a406c91996b6ee84a459c",
+        "android_client_info": {
+          "package_name": "com.example.mycmri"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkgLS-wTPNpDcBtYnOTYUrD61sPG0Vzag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
