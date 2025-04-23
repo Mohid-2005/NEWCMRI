@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -51,10 +52,7 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
         ) {
             TextField(
                 value = medName,
-                onValueChange = {
-                    medName = it
-                    save()
-                },
+                onValueChange = { medName = it },
                 label = { Text("Medication Name") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -62,10 +60,7 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
 
             TextField(
                 value = timesPerDay,
-                onValueChange = {
-                    timesPerDay = it
-                    save()
-                },
+                onValueChange = { timesPerDay = it },
                 label = { Text("Times per Day") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -73,13 +68,19 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
 
             TextField(
                 value = duration,
-                onValueChange = {
-                    duration = it
-                    save()
-                },
+                onValueChange = { duration = it },
                 label = { Text("Duration (days)") },
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { save() },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("💾 Save Medication")
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -109,10 +110,10 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
             Button(onClick = { navController.navigate("homepage") }) {
                 Text("🏠 Go to Home Page")
             }
         }
     }
 }
-

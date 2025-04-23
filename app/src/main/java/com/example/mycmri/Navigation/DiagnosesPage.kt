@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,7 +27,14 @@ fun DiagnosesPage(modifier: Modifier = Modifier, navController: NavController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("📋 Diagnoses") })
+            TopAppBar(
+                title = { Text("📋 Diagnoses") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("homepage") }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
+                    }
+                }
+            )
         }
     ) { innerPadding ->
         Column(
@@ -79,12 +87,6 @@ fun DiagnosesPage(modifier: Modifier = Modifier, navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("💾 Save Diagnoses")
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(onClick = { navController.navigate("homepage") }) {
-                Text("🏠 Go to Home Page")
             }
         }
     }

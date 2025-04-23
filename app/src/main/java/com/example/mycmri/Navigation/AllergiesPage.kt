@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -53,7 +55,16 @@ fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("⚠️ Allergies") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text("⚠️ Allergies") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("homepage") }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
         Column(
             modifier = modifier
@@ -116,12 +127,6 @@ fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = { navController.navigate("homepage") }) {
-                Text("🏠 Go to Home Page")
-            }
         }
     }
 }
-
