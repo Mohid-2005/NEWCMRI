@@ -42,14 +42,14 @@ android {
 
 dependencies {
         // Jetpack Compose Activity Result API
-        implementation("androidx.activity:activity-compose:1.3.1") // Ensure you have this version or later
-        implementation ("androidx.compose.runtime:runtime:1.1.1") // Ensure this or later version
-        implementation ("com.google.code.gson:gson:2.10.1")
+        implementation(libs.androidx.activity.compose.v131) // Ensure you have this version or later
+        implementation (libs.androidx.runtime) // Ensure this or later version
+        implementation (libs.gson)
 
     // Other dependencies
 
-
-
+    implementation (platform(libs.firebase.bom))
+    implementation (libs.firebase.firestore.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

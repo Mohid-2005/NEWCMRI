@@ -1,6 +1,5 @@
 package com.example.mycmri.Navigation
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -11,13 +10,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mycmri.data.Medication
 import com.example.mycmri.helpers.StorageHelper2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
-    var medicationList by remember { mutableStateOf(StorageHelper2.getMedications(context).toMutableList()) }
+    var medicationList by remember { mutableStateOf(listOf<Medication>()) }
+
+    LaunchedEffect(Unit) {
+        StorageHelper2.getMedications(context) { fetchedList ->
+            medicationList = fetchedList
+        }
+    }
 
     var medName by remember { mutableStateOf("") }
     var timesPerDay by remember { mutableStateOf("") }
@@ -25,8 +31,8 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
 
     fun save() {
         if (medName.isNotBlank() && timesPerDay.isNotBlank() && duration.isNotBlank()) {
-            medicationList.add(Triple(medName, timesPerDay, duration))
-            StorageHelper2.saveMedications(context, medicationList)
+            val newMed = Medication("" ,medName, timesPerDay, duration)
+            StorageHelper2.saveMedication(context, newMed)
             medName = ""
             timesPerDay = ""
             duration = ""
@@ -34,8 +40,14 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
     }
 
     fun delete(index: Int) {
-        medicationList.removeAt(index)
-        StorageHelper2.saveMedications(context, medicationList)
+        val med = medicationList[index]
+        StorageHelper2.deleteMedication(context, med.id)
+
+        // Creates a new list that is a copy of the original. Allows modication of the list, i.e.
+        // removal of the Medication at the given index. Triggers Compose to recompose UI
+        medicationList = medicationList.toMutableList().also {
+            it.removeAt(index)
+        }
     }
 
     Scaffold(
@@ -96,7 +108,7 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
-                            Text("• ${med.first} - ${med.second}x/day for ${med.third} days")
+                            Text("• ${med.name} - ${med.frequency}x/day for ${med.duration} days")
                         }
                         Button(
                             onClick = { delete(index) },
