@@ -37,13 +37,13 @@ object StorageHelper2 {
         val db = FirebaseFirestore.getInstance()
         val medMap = mapOf(
             "name" to med.name,
-            "timesPerDay" to med.frequency,
+            "frequency" to med.frequency,
             "duration" to med.duration
         )
 
-        db.collection("patients")
+        db.collection("patient")
             .document(userId)
-            .collection("medications")
+            .collection("medication")
             .add(medMap)
             .addOnSuccessListener {
                 Log.d(PREF_NAME, "Medication added to Firestore")
@@ -57,14 +57,15 @@ object StorageHelper2 {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return onResult(emptyList())
         val db = FirebaseFirestore.getInstance()
 
-        db.collection("patients")
+        db.collection("patient")
             .document(userId)
-            .collection("medications")
+            .collection("medication")
             .get()
             .addOnSuccessListener { snapshot ->
                 val meds = snapshot.documents.mapNotNull { doc ->
+                    Log.d(PREF_NAME, "doc fields: ${doc.data}")
                     val name = doc.getString("name") ?: return@mapNotNull null
-                    val timesPerDay = doc.getString("timesPerDay") ?: return@mapNotNull null
+                    val timesPerDay = doc.getString("frequency") ?: return@mapNotNull null
                     val duration = doc.getString("duration") ?: return@mapNotNull null
                     Medication(doc.id, name, timesPerDay, duration)
                 }
@@ -80,9 +81,9 @@ object StorageHelper2 {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val db = FirebaseFirestore.getInstance()
 
-        db.collection("patients")
+        db.collection("patient")
             .document(userId)
-            .collection("medications")
+            .collection("medication")
             .document(id)
             .delete()
             .addOnSuccessListener {
