@@ -8,6 +8,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -20,7 +22,6 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentsPage(navController: NavController, modifier: Modifier = Modifier) {
-
     // Context and file selection result launcher
     val context = LocalContext.current
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
@@ -34,7 +35,12 @@ fun DocumentsPage(navController: NavController, modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("📂 Documents") }
+                title = { Text("📂 Documents") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("homepage") }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -58,14 +64,6 @@ fun DocumentsPage(navController: NavController, modifier: Modifier = Modifier) {
             selectedFileUri?.let {
                 val fileName = getFileNameFromUri(context, it)
                 Text(text = "Selected file: $fileName")
-            }
-
-            // Button to navigate back to Home
-            Button(
-                onClick = { navController.navigate("homepage") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Back to Home")
             }
         }
     }

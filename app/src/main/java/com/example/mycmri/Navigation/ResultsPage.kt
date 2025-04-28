@@ -2,6 +2,8 @@ package com.example.mycmri.Navigation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,9 +18,9 @@ fun ResultsPage(navController: NavController, modifier: Modifier = Modifier) {
         topBar = {
             TopAppBar(
                 title = { Text("📊 Results") },
-                actions = {
-                    TextButton(onClick = { navController.navigate("homepage") }) {
-                        Text("Go Home")
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("homepage") }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
                     }
                 }
             )
@@ -85,5 +87,4 @@ fun ResultsPage(navController: NavController, modifier: Modifier = Modifier) {
         }
     }
 }
-
 

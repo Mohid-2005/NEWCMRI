@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,10 +20,8 @@ import androidx.navigation.NavController
 @Composable
 fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
 
-    // Access context using LocalContext.current
     val context = LocalContext.current
 
-    // List of vaccines available in Ireland
     val allVaccines = listOf(
         "COVID-19 Vaccine",
         "Influenza (Flu) Vaccine",
@@ -35,13 +35,9 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
         "Pneumococcal Vaccine"
     )
 
-    // SharedPreferences setup
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("VaccinePreferences", Context.MODE_PRIVATE)
-
-    // Read stored vaccine statuses from SharedPreferences
     val savedVaccineStatus = remember { mutableStateOf(loadVaccineStatus(sharedPreferences, allVaccines)) }
 
-    // Update SharedPreferences when a vaccine status changes
     fun saveVaccineStatus(vaccine: String, isChecked: Boolean) {
         savedVaccineStatus.value = savedVaccineStatus.value.toMutableMap().apply {
             this[vaccine] = isChecked
@@ -52,7 +48,12 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("💉 Vaccines") }
+                title = { Text("💉 Vaccines") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("homepage") }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -62,13 +63,11 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            // List of vaccines with checkboxes to indicate if the user has taken the vaccine
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.weight(1f)
             ) {
                 items(allVaccines) { vaccine ->
-                    // Toggle state for each vaccine
                     val isChecked = savedVaccineStatus.value[vaccine] ?: false
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -77,7 +76,6 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
                         Checkbox(
                             checked = isChecked,
                             onCheckedChange = { checked ->
-                                // Save the vaccine status when the checkbox is clicked
                                 saveVaccineStatus(vaccine, checked)
                             }
                         )
@@ -87,7 +85,6 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
                 }
             }
 
-            // Button to navigate back to the Home Page
             Button(
                 onClick = { navController.navigate("homepage") },
                 modifier = Modifier.fillMaxWidth()
@@ -97,7 +94,6 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
         }
     }
 }
-
 // Function to load vaccine status from SharedPreferences
 fun loadVaccineStatus(sharedPreferences: SharedPreferences, allVaccines: List<String>): Map<String, Boolean> {
     val vaccineStatus = mutableMapOf<String, Boolean>()
