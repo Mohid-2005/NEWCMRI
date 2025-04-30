@@ -19,16 +19,16 @@ import com.example.mycmri.StorageHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SymptomsPage(modifier: Modifier = Modifier, navController: NavController) {
+fun DiagnosesPage(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
     val storageHelper = remember { StorageHelper(context) }
 
-    var symptoms by remember { mutableStateOf(storageHelper.loadDiagnoses().ifEmpty { listOf("") }) }
+    var diagnoses by remember { mutableStateOf(storageHelper.loadDiagnoses().ifEmpty { listOf("") }) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("📋 Symptoms") },
+                title = { Text("📋 Diagnoses") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate("homepage") }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
@@ -46,47 +46,47 @@ fun SymptomsPage(modifier: Modifier = Modifier, navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Enter Symptoms", fontSize = 24.sp)
+            Text("Enter Diagnoses", fontSize = 24.sp)
 
-            symptoms.forEachIndexed { index, symptom ->
+            diagnoses.forEachIndexed { index, diagnosis ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     TextField(
-                        value = symptom,
+                        value = diagnosis,
                         onValueChange = { newValue ->
-                            symptoms = symptoms.toMutableList().also {
+                            diagnoses = diagnoses.toMutableList().also {
                                 it[index] = newValue
                             }
                         },
-                        label = { Text("Symptom ${index + 1}") },
+                        label = { Text("Diagnosis ${index + 1}") },
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = {
-                        symptoms = symptoms.toMutableList().also {
+                        diagnoses = diagnoses.toMutableList().also {
                             it.removeAt(index)
                         }
                     }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete Symptom")
+                        Icon(Icons.Default.Delete, contentDescription = "Delete Diagnosis")
                     }
                 }
             }
 
             Button(
-                onClick = { symptoms = symptoms + "" },
+                onClick = { diagnoses = diagnoses + "" },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("➕ Add New Symptom")
+                Text("➕ Add New Diagnosis")
             }
 
             Button(
                 onClick = {
-                    storageHelper.saveDiagnoses(symptoms.filter { it.isNotBlank() })
+                    storageHelper.saveDiagnoses(diagnoses.filter { it.isNotBlank() })
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("💾 Save Symptoms")
+                Text("💾 Save Diagnoses")
             }
         }
     }

@@ -41,7 +41,7 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
 
 
     val categories = listOf(
-        "📋 Symptoms",
+        "📋 Diagnoses",
         "⚠️ Allergies",
         "💊 Medications",
         "📊 Results",

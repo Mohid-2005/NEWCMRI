@@ -14,9 +14,15 @@ import com.example.mycmri.Navigation.LinkedWebsitesPage
 import com.example.mycmri.Navigation.MedicationsPage
 import com.example.mycmri.Navigation.ResultsPage
 import com.example.mycmri.Navigation.SettingsPage
-import com.example.mycmri.Navigation.SymptomsPage
+import com.example.mycmri.Navigation.DiagnosesPage
 import com.example.mycmri.Pages.DocumentsPage
 import com.example.mycmri.Pages.VaccinesPage
+import com.example.mycmri.Navigation.DiagnosesPage
+
+
+private infix fun Unit.Page(modifier: Modifier) {
+
+}
 
 @Composable
 fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) {
@@ -41,9 +47,10 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
         composable("linked_websites") {  // Linked Websites route
             LinkedWebsitesPage(modifier, navController)
         }
-        composable("symptoms") {
-            SymptomsPage(modifier, navController)
+        composable("diagnoses") {
+            DiagnosesPage(modifier, navController)
         }
+
         composable("allergies") {
             AllergiesPage(modifier, navController)
         }
@@ -63,5 +70,7 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
 
     })
 }
+
+
 
 
