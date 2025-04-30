@@ -65,7 +65,7 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
         ) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxSize()
             ) {
                 items(allVaccines) { vaccine ->
                     val isChecked = savedVaccineStatus.value[vaccine] ?: false
@@ -84,16 +84,10 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier) {
                     }
                 }
             }
-
-            Button(
-                onClick = { navController.navigate("homepage") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Back to Home")
-            }
         }
     }
 }
+
 // Function to load vaccine status from SharedPreferences
 fun loadVaccineStatus(sharedPreferences: SharedPreferences, allVaccines: List<String>): Map<String, Boolean> {
     val vaccineStatus = mutableMapOf<String, Boolean>()

@@ -1,6 +1,7 @@
 package com.example.mycmri.Navigation
 
 import android.widget.Toast
+import com.example.mycmri.helpers.StorageHelper
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -30,8 +31,17 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
         }
     }
 
+    // 👇 Retrieve username from SharedPreferences
+    val username = remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        username.value = StorageHelper.getUsername(context) ?: "User"
+    }
+    StorageHelper.saveUsername(context, "User")
+
+
     val categories = listOf(
-        "📋 Diagnoses",
+        "📋 Symptoms",
         "⚠️ Allergies",
         "💊 Medications",
         "📊 Results",
@@ -87,7 +97,8 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            Text(text = "Welcome 👋", fontSize = 24.sp)
+            // 👇 Updated welcome message
+            Text(text = "Welcome, ${username.value} 👋", fontSize = 24.sp)
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyVerticalGrid(
@@ -124,7 +135,3 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
         }
     }
 }
-
-
-
-
