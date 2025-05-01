@@ -2,25 +2,28 @@ package com.example.mycmri
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mycmri.Navigation.AllergiesPage
-import com.example.mycmri.Navigation.HomePage
-import com.example.mycmri.Navigation.LoginPage
-import com.example.mycmri.Navigation.SignUp
-import com.example.mycmri.Navigation.Appointments
-import com.example.mycmri.Navigation.LinkedWebsitesPage
-import com.example.mycmri.Navigation.MedicationsPage
-import com.example.mycmri.Navigation.ResultsPage
-import com.example.mycmri.Navigation.SettingsPage
-import com.example.mycmri.Navigation.DiagnosesPage
+import com.example.mycmri.ui.AllergiesPage
+import com.example.mycmri.ui.HomePage
+import com.example.mycmri.ui.LoginPage
+import com.example.mycmri.ui.SignUp
+import com.example.mycmri.ui.Appointments
+import com.example.mycmri.ui.LinkedWebsitesPage
+import com.example.mycmri.ui.MedicationsPage
+import com.example.mycmri.ui.ResultsPage
+import com.example.mycmri.ui.SettingsPage
+import com.example.mycmri.ui.DiagnosesPage
 import com.example.mycmri.Pages.DocumentsPage
-import com.example.mycmri.Pages.VaccinesPage
+import com.example.mycmri.ui.VaccinesPage
+import com.example.mycmri.ui.VaccineViewModel
 
 @Composable
 fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) {
     val navController = rememberNavController()
+    val vaccineViewModel: VaccineViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "login", builder = {
         composable("login"){
@@ -57,7 +60,7 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
             DocumentsPage(navController, modifier)
         }
         composable("vaccines") {
-            VaccinesPage(navController, modifier)
+            VaccinesPage(navController, modifier, vaccineViewModel)
         }
 
 

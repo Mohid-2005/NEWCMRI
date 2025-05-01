@@ -1,6 +1,5 @@
-package com.example.mycmri.Navigation
+package com.example.mycmri.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -8,8 +7,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -117,7 +116,7 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
                         ),
                         elevation = ButtonDefaults.buttonElevation(4.dp)
                     ) {
-                        Text(text = item)
+                        Text(text = item, color = Color.White)
                     }
                 }
             }

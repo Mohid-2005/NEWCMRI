@@ -1,4 +1,4 @@
-package com.example.mycmri.Navigation
+package com.example.mycmri.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement

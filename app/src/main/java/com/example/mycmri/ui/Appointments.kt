@@ -1,8 +1,7 @@
-package com.example.mycmri.Navigation
+package com.example.mycmri.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
@@ -29,7 +28,7 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
     // State for the list of appointments (this will be cleared when the app is closed)
     val appointments = remember { mutableStateListOf<String>() }
 
-    // Handle the navigation when the user changes the tab
+    // Handle the ui when the user changes the tab
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
             0 -> navController.navigate("homepage") // Navigate to HomePage

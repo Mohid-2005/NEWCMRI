@@ -1,7 +1,6 @@
-package com.example.mycmri.Navigation
+package com.example.mycmri.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*

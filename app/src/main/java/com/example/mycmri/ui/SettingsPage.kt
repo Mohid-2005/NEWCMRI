@@ -1,4 +1,4 @@
-package com.example.mycmri.Navigation
+package com.example.mycmri.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -24,7 +24,7 @@ fun SettingsPage(modifier: Modifier = Modifier, navController: NavController, au
     var email by remember { mutableStateOf(TextFieldValue("user123@example.com")) }
     var notificationsEnabled by remember { mutableStateOf(true) }
 
-    // Handle the navigation when the user changes the tab
+    // Handle the ui when the user changes the tab
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
             0 -> navController.navigate("homepage") // Navigate to HomePage

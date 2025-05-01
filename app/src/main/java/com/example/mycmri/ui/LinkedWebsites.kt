@@ -1,4 +1,4 @@
-package com.example.mycmri.Navigation
+package com.example.mycmri.ui
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
@@ -10,9 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController

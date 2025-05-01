@@ -1,4 +1,4 @@
-package com.example.mycmri.Navigation
+package com.example.mycmri.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
