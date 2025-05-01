@@ -3,6 +3,7 @@ package com.example.mycmri.ui
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,8 +12,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
 import com.example.mycmri.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,17 +21,14 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
     val topTabs = listOf("🏠 Home", "📅 Appointments", "⚙️ Settings")
     var selectedTab by remember { mutableStateOf(1) } // Appointments tab selected
 
-    // State to manage the TextField input
     var appointmentText by remember { mutableStateOf(TextFieldValue("")) }
-
-    // State for the list of appointments (this will be cleared when the app is closed)
     val appointments = remember { mutableStateListOf<String>() }
 
     // Handle the ui when the user changes the tab
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
-            0 -> navController.navigate("homepage") // Navigate to HomePage
-            2 -> navController.navigate("settings") // Navigate to SettingsPage
+            0 -> navController.navigate("homepage")
+            2 -> navController.navigate("settings")
         }
     }
 
@@ -41,6 +37,11 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
             Column {
                 TopAppBar(
                     title = { Text("MyCMRI") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigate("homepage") }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
+                        }
+                    },
                     actions = {
                         TextButton(onClick = { authViewModel.signout() }) {
                             Text("Sign out")
@@ -59,8 +60,7 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
                     }
                 }
             }
-        },
-        // Removed bottomBar
+        }
     ) { innerPadding ->
         Column(
             modifier = modifier
@@ -71,7 +71,6 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
             Text(text = "Appointments", fontSize = 32.sp)
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Appointment TextField
             TextField(
                 value = appointmentText,
                 onValueChange = { appointmentText = it },
@@ -82,13 +81,11 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Button to save the appointment
             Button(
                 onClick = {
-                    // Add appointment to the list when the button is clicked
                     if (appointmentText.text.isNotEmpty()) {
                         appointments.add(appointmentText.text)
-                        appointmentText = TextFieldValue("") // Reset the TextField after saving
+                        appointmentText = TextFieldValue("")
                         Toast.makeText(navController.context, "Appointment saved!", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(navController.context, "Please enter appointment details!", Toast.LENGTH_SHORT).show()
@@ -101,14 +98,12 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Display current session saved appointments
             if (appointments.isEmpty()) {
                 Text(text = "No appointments saved yet.", fontSize = 16.sp)
             } else {
                 Text(text = "Your Saved Appointments:", fontSize = 20.sp)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Display the saved appointments in a list
                 appointments.forEachIndexed { index, appointment ->
                     Row(
                         modifier = Modifier
@@ -123,7 +118,6 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
                         )
                         IconButton(
                             onClick = {
-                                // Remove the selected appointment from the list
                                 appointments.removeAt(index)
                                 Toast.makeText(navController.context, "Appointment removed!", Toast.LENGTH_SHORT).show()
                             }
@@ -139,4 +133,5 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
         }
     }
 }
+
 

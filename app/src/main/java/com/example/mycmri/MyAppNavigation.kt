@@ -47,6 +47,7 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
         composable("diagnoses") {
             DiagnosesPage(modifier, navController)
         }
+
         composable("allergies") {
             AllergiesPage(modifier, navController)
         }
@@ -66,5 +67,7 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
 
     })
 }
+
+
 
 

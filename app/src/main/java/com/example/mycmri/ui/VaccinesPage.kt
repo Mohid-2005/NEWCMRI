@@ -44,7 +44,7 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier, vi
         ) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.fillMaxSize()
             ) {
                 items(viewModel.vaccines) { vaccine ->
                     val isChecked = vaccineStates[vaccine.docId] ?: false
@@ -60,13 +60,6 @@ fun VaccinesPage(navController: NavController, modifier: Modifier = Modifier, vi
                         Text(text = vaccine.name)
                     }
                 }
-            }
-
-            Button(
-                onClick = { navController.navigate("homepage") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Back to Home")
             }
         }
     }

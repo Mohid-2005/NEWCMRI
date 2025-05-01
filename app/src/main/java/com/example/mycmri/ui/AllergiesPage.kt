@@ -18,39 +18,43 @@ import com.example.mycmri.helpers.StorageHelper3
 @Composable
 fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
-    var selectedAllergies by remember { mutableStateOf(StorageHelper3.getAllergies(context).toMutableList()) }
+    var selectedAllergies by remember {
+        mutableStateOf(StorageHelper3.getAllergies(context))
+    }
     var customAllergy by remember { mutableStateOf("") }
+    var showCustomInput by remember { mutableStateOf(false) }
 
+    // ✅ Only keeping the four requested allergens
     val commonAllergies = listOf(
-        "Peanuts", "Tree nuts", "Milk", "Eggs", "Fish", "Shellfish", "Wheat", "Soy",
-        "Gluten", "Sesame", "Dust mites", "Pollen", "Mold", "Animal dander",
-        "Insect stings", "Latex", "Medications", "Perfume", "Citrus", "Nickel"
+        "Peanuts", "Eggs", "Fish", "Gluten"
     )
 
-    fun save() {
-        StorageHelper3.saveAllergies(context, selectedAllergies)
+    fun save(newList: List<String>) {
+        StorageHelper3.saveAllergies(context, newList)
+        selectedAllergies = newList
     }
 
     fun toggleAllergy(allergy: String) {
-        if (selectedAllergies.contains(allergy)) {
-            selectedAllergies.remove(allergy)
+        val updated = if (selectedAllergies.contains(allergy)) {
+            selectedAllergies - allergy
         } else {
-            selectedAllergies.add(allergy)
+            selectedAllergies + allergy
         }
-        save()
+        save(updated)
     }
 
     fun addCustomAllergy() {
         if (customAllergy.isNotBlank()) {
-            selectedAllergies.add(customAllergy.trim())
+            val updated = selectedAllergies + customAllergy.trim()
             customAllergy = ""
-            save()
+            showCustomInput = false
+            save(updated)
         }
     }
 
     fun deleteAllergy(index: Int) {
-        selectedAllergies.removeAt(index)
-        save()
+        val updated = selectedAllergies.toMutableList().apply { removeAt(index) }
+        save(updated)
     }
 
     Scaffold(
@@ -93,16 +97,23 @@ fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Other Allergies")
-            TextField(
-                value = customAllergy,
-                onValueChange = { customAllergy = it },
-                label = { Text("Add custom allergy") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { addCustomAllergy() }) {
-                Text("Add Allergy")
+
+            Button(onClick = { showCustomInput = !showCustomInput }) {
+                Text(if (showCustomInput) "Cancel" else "Other Allergens")
+            }
+
+            if (showCustomInput) {
+                Spacer(modifier = Modifier.height(12.dp))
+                TextField(
+                    value = customAllergy,
+                    onValueChange = { customAllergy = it },
+                    label = { Text("Enter custom allergen") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { addCustomAllergy() }) {
+                    Text("Add Allergy")
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
