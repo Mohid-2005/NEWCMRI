@@ -1,8 +1,10 @@
 package com.example.mycmri.ui
 
+import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -12,18 +14,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.mycmri.StorageHelper
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DiagnosesPage(modifier: Modifier = Modifier, navController: NavController) {
-    val context = LocalContext.current
-    val storageHelper = remember { StorageHelper(context) }
+fun DiagnosesPage(
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
+    val viewModel: DiagnosisViewModel = viewModel()
+    val available by viewModel.availableDiagnoses.collectAsState()
+    val selected by viewModel.selectedDiagnoses.collectAsState()
 
-    var diagnoses by remember { mutableStateOf(storageHelper.loadDiagnoses().ifEmpty { listOf("") }) }
+    // Track dropdown expanded state per index
+    val expandedMap = remember { mutableStateMapOf<Int, Boolean>() }
 
     Scaffold(
         topBar = {
@@ -31,7 +36,7 @@ fun DiagnosesPage(modifier: Modifier = Modifier, navController: NavController) {
                 title = { Text("📋 Diagnoses") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate("homepage") }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back to Home")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -41,52 +46,64 @@ fun DiagnosesPage(modifier: Modifier = Modifier, navController: NavController) {
             modifier = modifier
                 .padding(innerPadding)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text("Enter Diagnoses", fontSize = 24.sp)
+            Text(text = "Select Diagnoses", style = MaterialTheme.typography.titleMedium)
 
-            diagnoses.forEachIndexed { index, diagnosis ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    TextField(
-                        value = diagnosis,
-                        onValueChange = { newValue ->
-                            diagnoses = diagnoses.toMutableList().also {
-                                it[index] = newValue
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                itemsIndexed(selected) { index, docId ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        // Dropdown for each diagnosis entry
+                        ExposedDropdownMenuBox(
+                            expanded = expandedMap.getOrPut(index) { false },
+                            onExpandedChange = { expandedMap[index] = it },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            TextField(
+                                value = available.find { it.docId == docId }?.name ?: "Select diagnosis",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Diagnosis ${index + 1}") },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandedMap[index]!!) },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = expandedMap[index]!!,
+                                onDismissRequest = { expandedMap[index] = false }
+                            ) {
+                                available.forEach { option ->
+                                    DropdownMenuItem(
+                                        text = { Text(option.name) },
+                                        onClick = {
+                                            viewModel.replaceDiagnosisAt(index, option.docId)
+                                            expandedMap[index] = false
+                                        }
+                                    )
+                                }
                             }
-                        },
-                        label = { Text("Diagnosis ${index + 1}") },
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(onClick = {
-                        diagnoses = diagnoses.toMutableList().also {
-                            it.removeAt(index)
                         }
-                    }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete Diagnosis")
+
+                        IconButton(onClick = { viewModel.removeDiagnosisAt(index) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Remove")
+                        }
                     }
                 }
             }
 
             Button(
-                onClick = { diagnoses = diagnoses + "" },
+                onClick = { viewModel.addEmptyDiagnosis() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("➕ Add New Diagnosis")
-            }
-
-            Button(
-                onClick = {
-                    storageHelper.saveDiagnoses(diagnoses.filter { it.isNotBlank() })
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("💾 Save Diagnoses")
+                Text(text = "➕ Add New Diagnosis")
             }
         }
     }

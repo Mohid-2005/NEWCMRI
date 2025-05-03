@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mycmri.AuthState
 import com.example.mycmri.AuthViewModel
+import com.example.mycmri.StorageHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,9 +34,9 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
     val username = remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        username.value = StorageHelper.getUsername(context) ?: "User"
+        //username.value = StorageHelper.getUsername(context) ?: "User"
     }
-    StorageHelper.saveUsername(context, "User")
+    //StorageHelper.saveUsername(context, "User")
 
 
     val categories = listOf(
