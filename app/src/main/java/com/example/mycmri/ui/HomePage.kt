@@ -39,7 +39,7 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
 
 
     val categories = listOf(
-        "📋 Diagnoses",
+        "📋 Symptoms",
         "⚠️ Allergies",
         "💊 Medications",
         "📊 Results",
@@ -109,7 +109,7 @@ fun HomePage(modifier: Modifier = Modifier, navController: NavController, authVi
                     Button(
                         onClick = {
                             when (item) {
-                                "📋 Diagnoses" -> navController.navigate("diagnoses")
+                                "📋 Symptoms" -> navController.navigate("diagnoses")
                                 "⚠️ Allergies" -> navController.navigate("allergies")
                                 "💊 Medications" -> navController.navigate("medications")
                                 "📊 Results" -> navController.navigate("results")

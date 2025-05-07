@@ -34,7 +34,7 @@ fun DiagnosesPage(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("📋 Diagnoses") },
+                title = { Text("📋 Symptoms") },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate("homepage") }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -50,7 +50,7 @@ fun DiagnosesPage(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(text = "Select Diagnoses", style = MaterialTheme.typography.titleMedium)
+            Text(text = "Select Symptoms/Diagnoses", style = MaterialTheme.typography.titleMedium)
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -104,7 +104,7 @@ fun DiagnosesPage(
                 onClick = { viewModel.addEmptyDiagnosis() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "➕ Add New Diagnosis")
+                Text(text = "➕ Add New Symptoms/Diagnosis")
             }
         }
     }
