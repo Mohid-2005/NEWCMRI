@@ -40,7 +40,7 @@ class AllergyViewModel : ViewModel(){
      */
     fun toggleAllergy(allergy: String){
         patientDoc?.let { docRef ->
-            viewModelScope.launch {
+            viewModelScope.launch {  // reminding note: this a coroutine in the scope of the viewmodel. Enables calling of Firestore update(), which is asynchronous and would block main thread
                 if(_selectedAllergies.value.contains(allergy))  docRef.update("allergy", FieldValue.arrayRemove(allergy))
                 else docRef.update("allergy", FieldValue.arrayUnion(allergy))
 
@@ -73,7 +73,7 @@ class AllergyViewModel : ViewModel(){
     fun removeAllergyAt(index: Int){
         val oldList = _selectedAllergies.value.toMutableList()
         val old = oldList.removeAt(index)
-        patientDoc?.let{ docRef ->
+        patientDoc?.let{ docRef ->  // if patientDoc not null, start coroutine update() to remove the value in the array in Firestore
             viewModelScope.launch {
                 docRef.update("allergy", FieldValue.arrayRemove(old))
             }
