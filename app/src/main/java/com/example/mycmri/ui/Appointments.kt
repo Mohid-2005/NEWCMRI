@@ -4,27 +4,61 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mycmri.AuthViewModel
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.*
+
+data class Appointment(val name: String = "", val date: Timestamp = Timestamp.now())
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Appointments(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
-
+fun Appointments(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
     val topTabs = listOf("🏠 Home", "📅 Appointments", "⚙️ Settings")
-    var selectedTab by remember { mutableStateOf(1) } // Appointments tab selected
+    var selectedTab by remember { mutableStateOf(1) }
 
-    var appointmentText by remember { mutableStateOf(TextFieldValue("")) }
-    val appointments = remember { mutableStateListOf<String>() }
+    val appointments = remember { mutableStateListOf<Appointment>() }
+    val context = navController.context
 
-    // Handle the ui when the user changes the tab
+    // Load appointments from Firestore
+    LaunchedEffect(Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(context, "User not logged in", Toast.LENGTH_SHORT).show()
+            return@LaunchedEffect
+        }
+
+        FirebaseFirestore.getInstance()
+            .collection("patient")
+            .document(userId)
+            .collection("appointment")
+            .get()
+            .addOnSuccessListener { docs ->
+                appointments.clear()
+                for (doc in docs) {
+                    val name = doc.getString("name") ?: ""
+                    val date = doc.getTimestamp("date") ?: Timestamp.now()
+                    appointments.add(Appointment(name, date))
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Failed to load appointments", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    // Navigation on tab switch
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
             0 -> navController.navigate("homepage")
@@ -52,9 +86,7 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
                     topTabs.forEachIndexed { index, title ->
                         Tab(
                             selected = selectedTab == index,
-                            onClick = {
-                                selectedTab = index
-                            },
+                            onClick = { selectedTab = index },
                             text = { Text(title) }
                         )
                     }
@@ -71,60 +103,28 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
             Text(text = "Appointments", fontSize = 32.sp)
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextField(
-                value = appointmentText,
-                onValueChange = { appointmentText = it },
-                label = { Text("Write your appointment details here...") },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Enter your appointment...") }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    if (appointmentText.text.isNotEmpty()) {
-                        appointments.add(appointmentText.text)
-                        appointmentText = TextFieldValue("")
-                        Toast.makeText(navController.context, "Appointment saved!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(navController.context, "Please enter appointment details!", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save Appointment")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             if (appointments.isEmpty()) {
-                Text(text = "No appointments saved yet.", fontSize = 16.sp)
+                Text("No appointments available.", fontSize = 16.sp)
             } else {
-                Text(text = "Your Saved Appointments:", fontSize = 20.sp)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                appointments.forEachIndexed { index, appointment ->
-                    Row(
+                appointments.forEach { appointment ->
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                            .padding(vertical = 4.dp)
                     ) {
-                        Text(
-                            text = appointment,
-                            fontSize = 16.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        IconButton(
-                            onClick = {
-                                appointments.removeAt(index)
-                                Toast.makeText(navController.context, "Appointment removed!", Toast.LENGTH_SHORT).show()
-                            }
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete Appointment"
+                            Text(
+                                text = appointment.name,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = formatTimestamp(appointment.date),
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     }
@@ -134,4 +134,10 @@ fun Appointments(modifier: Modifier = Modifier, navController: NavController, au
     }
 }
 
-
+/**
+ * Formats Firestore timestamp
+ */
+fun formatTimestamp(timestamp: Timestamp): String {
+    val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    return sdf.format(timestamp.toDate())
+}
