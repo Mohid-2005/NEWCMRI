@@ -1,5 +1,6 @@
 package com.example.mycmri.ui
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -10,25 +11,61 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalContext
 import com.example.mycmri.AuthViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsPage(modifier: Modifier = Modifier, navController: NavController, authViewModel: AuthViewModel) {
-
+fun SettingsPage(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    authViewModel: AuthViewModel
+) {
+    val context = LocalContext.current
     val topTabs = listOf("🏠 Home", "📅 Appointments", "⚙️ Settings")
-    var selectedTab by remember { mutableStateOf(2) } // Settings tab selected
+    var selectedTab by remember { mutableStateOf(2) }
 
-    // Manage the input fields for the settings
-    var username by remember { mutableStateOf(TextFieldValue("User123")) }
-    var email by remember { mutableStateOf(TextFieldValue("user123@example.com")) }
+    // TextField state and initial values
+    var username by remember { mutableStateOf(TextFieldValue("")) }
+    var email by remember { mutableStateOf(TextFieldValue("")) }
+    var initialUsername by remember { mutableStateOf("") }
+    var initialEmail by remember { mutableStateOf("") }
     var notificationsEnabled by remember { mutableStateOf(true) }
 
-    // Handle the ui when the user changes the tab
+    val user = FirebaseAuth.getInstance().currentUser
+    val uid = user?.uid
+    val db = FirebaseFirestore.getInstance()
+
+    // Load current values on first composition
+    LaunchedEffect(Unit) {
+        // Load email from Auth
+        user?.email?.let { e ->
+            email = TextFieldValue(e)
+            initialEmail = e
+        }
+        // Load username from Firestore
+        if (uid != null) {
+            db.collection("patient").document(uid).get()
+                .addOnSuccessListener { snap ->
+                    val uname = snap.getString("username") ?: ""
+                    username = TextFieldValue(uname)
+                    initialUsername = uname
+                }
+                .addOnFailureListener { e ->
+                    Log.e("SettingsPage", "Failed to load username", e)
+                }
+        }
+    }
+
+    // Handle tab navigation
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
-            0 -> navController.navigate("homepage") // Navigate to HomePage
-            1 -> navController.navigate("appointments") // Navigate to AppointmentsPage
+            0 -> navController.navigate("homepage")
+            1 -> navController.navigate("appointments")
         }
     }
 
@@ -53,7 +90,7 @@ fun SettingsPage(modifier: Modifier = Modifier, navController: NavController, au
                     }
                 }
             }
-        },
+        }
     ) { innerPadding ->
         Column(
             modifier = modifier
@@ -64,7 +101,7 @@ fun SettingsPage(modifier: Modifier = Modifier, navController: NavController, au
             Text(text = "Settings", fontSize = 32.sp)
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Change Username
+            // Username
             Text(text = "Username", fontSize = 18.sp)
             TextField(
                 value = username,
@@ -74,7 +111,7 @@ fun SettingsPage(modifier: Modifier = Modifier, navController: NavController, au
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Change Email
+            // Email
             Text(text = "Email", fontSize = 18.sp)
             TextField(
                 value = email,
@@ -84,7 +121,7 @@ fun SettingsPage(modifier: Modifier = Modifier, navController: NavController, au
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Enable/Disable Notifications
+            // Notifications toggle
             Text(text = "Notifications", fontSize = 18.sp)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -99,12 +136,47 @@ fun SettingsPage(modifier: Modifier = Modifier, navController: NavController, au
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Save Settings Button
+            // Save Settings
             Button(
                 onClick = {
-                    // Save settings logic goes here (e.g., save to ViewModel, API, or local storage)
-                    // For now, we'll just show a confirmation message.
-                    Toast.makeText(navController.context, "Settings saved!", Toast.LENGTH_SHORT).show()
+                    if (uid == null) {
+                        Toast.makeText(context, "Not signed in", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    val newEmail = email.text.trim()
+                    val newUsername = username.text.trim()
+                    var updated = false
+
+                    // Update email if changed
+                    if (newEmail.isNotBlank() && newEmail != initialEmail) {
+                        user?.verifyBeforeUpdateEmail(newEmail)
+                            ?.addOnSuccessListener {
+                                Toast.makeText(context, "Verification sent to $newEmail", Toast.LENGTH_LONG).show()
+                            }
+                            ?.addOnFailureListener { e ->
+                                Log.e("SettingsPage", "Email update failed", e)
+                                Toast.makeText(context, "Email update failed: ${e.message}", Toast.LENGTH_LONG).show()
+                            }
+                        updated = true
+                    }
+
+                    // Update username if changed
+                    if (newUsername.isNotBlank() && newUsername != initialUsername) {
+                        db.collection("patient").document(uid)
+                            .update("username", newUsername)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Username updated", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("SettingsPage", "Username update failed", e)
+                                Toast.makeText(context, "Username update failed", Toast.LENGTH_SHORT).show()
+                            }
+                        updated = true
+                    }
+
+                    if (!updated) {
+                        Toast.makeText(context, "Nothing to update", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
