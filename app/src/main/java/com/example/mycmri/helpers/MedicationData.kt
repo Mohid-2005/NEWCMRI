@@ -6,9 +6,14 @@ import com.example.mycmri.data.Medication
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-object StorageHelper2 {
+/**
+ * This is functionally a View Model for the MedicationsPage. It interacts with the user-facing UI and
+ * updates the database accordingly.
+ */
+object MedicationData {
     private const val PREF_NAME = "medications_prefs"
 
+    // TODO: Convert to view model; tidy.
     /*
     fun saveMedications(context: Context, meds: List<Triple<String, String, String>>) {
         val sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

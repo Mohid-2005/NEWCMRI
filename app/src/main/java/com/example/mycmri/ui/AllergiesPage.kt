@@ -1,61 +1,34 @@
 package com.example.mycmri.ui
 
+import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.mycmri.helpers.StorageHelper3
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
-    val context = LocalContext.current
-    var selectedAllergies by remember {
-        mutableStateOf(StorageHelper3.getAllergies(context))
-    }
+fun AllergiesPage(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    @SuppressLint("ContextCastToActivity") viewModel: AllergyViewModel = viewModel(LocalContext.current as ComponentActivity)
+) {
+    val selectedAllergies by viewModel.selectedAllergies.collectAsState()
     var customAllergy by remember { mutableStateOf("") }
     var showCustomInput by remember { mutableStateOf(false) }
 
-    // ✅ Only keeping the four requested allergens
-    val commonAllergies = listOf(
-        "Peanuts", "Eggs", "Fish", "Gluten"
-    )
-
-    fun save(newList: List<String>) {
-        StorageHelper3.saveAllergies(context, newList)
-        selectedAllergies = newList
-    }
-
-    fun toggleAllergy(allergy: String) {
-        val updated = if (selectedAllergies.contains(allergy)) {
-            selectedAllergies - allergy
-        } else {
-            selectedAllergies + allergy
-        }
-        save(updated)
-    }
-
-    fun addCustomAllergy() {
-        if (customAllergy.isNotBlank()) {
-            val updated = selectedAllergies + customAllergy.trim()
-            customAllergy = ""
-            showCustomInput = false
-            save(updated)
-        }
-    }
-
-    fun deleteAllergy(index: Int) {
-        val updated = selectedAllergies.toMutableList().apply { removeAt(index) }
-        save(updated)
-    }
+    val commonAllergies = listOf("Peanut", "Egg", "Fish", "Gluten")
 
     Scaffold(
         topBar = {
@@ -88,7 +61,7 @@ fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
                     ) {
                         Checkbox(
                             checked = selectedAllergies.contains(allergy),
-                            onCheckedChange = { toggleAllergy(allergy) }
+                            onCheckedChange = { viewModel.toggleAllergy(allergy) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(allergy)
@@ -111,7 +84,11 @@ fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { addCustomAllergy() }) {
+                Button(onClick = {
+                    viewModel.addCustomAllergy(customAllergy)
+                    customAllergy = ""
+                    showCustomInput = false
+                }) {
                     Text("Add Allergy")
                 }
             }
@@ -128,11 +105,8 @@ fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("• $allergy")
-                        Button(
-                            onClick = { deleteAllergy(index) },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                        ) {
-                            Text("Delete")
+                        IconButton(onClick = { viewModel.removeAllergyAt(index) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete Allergy")
                         }
                     }
                 }
@@ -140,3 +114,4 @@ fun AllergiesPage(modifier: Modifier = Modifier, navController: NavController) {
         }
     }
 }
+

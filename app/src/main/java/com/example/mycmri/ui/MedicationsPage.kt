@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mycmri.data.Medication
-import com.example.mycmri.helpers.StorageHelper2
+import com.example.mycmri.helpers.MedicationData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,7 +22,7 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
     var medicationList by remember { mutableStateOf(listOf<Medication>()) }
 
     LaunchedEffect(Unit) {
-        StorageHelper2.getMedications(context) { fetchedList ->
+        MedicationData.getMedications(context) { fetchedList ->
             medicationList = fetchedList
         }
     }
@@ -34,7 +34,7 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
     fun save() {
         if (medName.isNotBlank() && timesPerDay.isNotBlank() && duration.isNotBlank()) {
             val newMed = Medication("" ,medName, timesPerDay, duration)
-            StorageHelper2.saveMedication(context, newMed)
+            MedicationData.saveMedication(context, newMed)
             medName = ""
             timesPerDay = ""
             duration = ""
@@ -43,7 +43,7 @@ fun MedicationsPage(modifier: Modifier = Modifier, navController: NavController)
 
     fun delete(index: Int) {
         val med = medicationList[index]
-        StorageHelper2.deleteMedication(context, med.id)
+        MedicationData.deleteMedication(context, med.id)
 
         // Creates a new list that is a copy of the original. Allows modication of the list, i.e.
         // removal of the Medication at the given index. Triggers Compose to recompose UI
