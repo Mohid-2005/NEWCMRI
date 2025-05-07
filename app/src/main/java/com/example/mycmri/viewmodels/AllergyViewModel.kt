@@ -1,4 +1,4 @@
-package com.example.mycmri.ui
+package com.example.mycmri.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * A [ViewModel] class that manages and updates patient allergy information in Firestore.
+ * A [androidx.lifecycle.ViewModel] class that manages and updates patient allergy information in Firestore.
  */
 class AllergyViewModel : ViewModel(){
     private val db = FirebaseFirestore.getInstance()

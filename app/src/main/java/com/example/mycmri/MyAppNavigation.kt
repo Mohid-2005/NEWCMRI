@@ -17,15 +17,17 @@ import com.example.mycmri.ui.ResultsPage
 import com.example.mycmri.ui.SettingsPage
 import com.example.mycmri.ui.DiagnosesPage
 import com.example.mycmri.Pages.DocumentsPage
-import com.example.mycmri.ui.AllergyViewModel
+import com.example.mycmri.viewmodels.AllergyViewModel
 import com.example.mycmri.ui.VaccinesPage
-import com.example.mycmri.ui.VaccineViewModel
+import com.example.mycmri.viewmodels.ResultsViewModel
+import com.example.mycmri.viewmodels.VaccineViewModel
 
 @Composable
 fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) {
     val navController = rememberNavController()
     val vaccineViewModel: VaccineViewModel = viewModel()
     val allergyViewModel: AllergyViewModel = viewModel()
+    val resultsViewModel: ResultsViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "login", builder = {
         composable("login"){
@@ -57,7 +59,7 @@ fun MyAppNavigation(modifier: Modifier = Modifier,authViewModel: AuthViewModel) 
             MedicationsPage(modifier, navController)
         }
         composable("results") {
-            ResultsPage(navController, modifier)
+            ResultsPage(navController, modifier, resultsViewModel)
         }
         composable("documents") {
             DocumentsPage(navController, modifier)

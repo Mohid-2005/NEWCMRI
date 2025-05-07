@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.mycmri.viewmodels.VaccineViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

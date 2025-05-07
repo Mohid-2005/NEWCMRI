@@ -1,7 +1,6 @@
-package com.example.mycmri.helpers
+package com.example.mycmri.viewmodels
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

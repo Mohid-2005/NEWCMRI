@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mycmri.data.Medication
-import com.example.mycmri.helpers.MedicationData
+import com.example.mycmri.viewmodels.MedicationData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

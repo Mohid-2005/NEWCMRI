@@ -1,4 +1,4 @@
-package com.example.mycmri.helpers
+package com.example.mycmri.viewmodels
 
 import android.content.Context
 import android.util.Log

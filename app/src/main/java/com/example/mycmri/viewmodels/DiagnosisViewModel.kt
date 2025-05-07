@@ -1,4 +1,4 @@
-package com.example.mycmri.ui
+package com.example.mycmri.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
